@@ -13,7 +13,6 @@ class Settings(BaseSettings):
     neo4j_username: str
     neo4j_password: str
     access_token_expire_minutes: str
-    app_password: str
     secret_key: str
     algorithm: str
 
