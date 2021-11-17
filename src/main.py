@@ -5,6 +5,8 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.routes import router as core_router
+from src.restaurants.routes import router as restaurant_router
+
 
 middleware = [
     Middleware(
@@ -33,6 +35,12 @@ app.include_router(
     tags=["Core"]
 )
 
+
+app.include_router(
+    restaurant_router,
+    prefix="/restaurants",
+    tags=["Restaurants"]
+)
 
 
 @app.middleware("http")
