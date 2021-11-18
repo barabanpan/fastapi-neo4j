@@ -5,6 +5,8 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.routes import router as core_router
+from src.auth.routes import router as auth_router
+from src.auth.services import get_current_active_user
 from src.restaurants.routes import router as restaurant_router
 
 
@@ -18,7 +20,6 @@ middleware = [
     )
 ]
 
-
 app = FastAPI(
     title="Recommender System API",
     description="Recommender System API built with FastAPI & Neo4j",
@@ -29,12 +30,8 @@ app = FastAPI(
     debug=True,
 )
 
-
-app.include_router(
-    core_router,
-    tags=["Core"]
-)
-
+app.include_router(core_router, tags=["Core"], dependencies=[Depends(get_current_active_user)])
+app.include_router(auth_router, tags=["Auth"], prefix="/auth")
 
 app.include_router(
     restaurant_router,
@@ -56,4 +53,3 @@ async def add_process_time_header(request: Request, call_next):
 async def startup() -> None:
     print("Waiting for Neo4j...")
     time.sleep(10)
-
