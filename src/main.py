@@ -5,12 +5,9 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.routes import router as core_router
-<<<<<<< HEAD
 from src.auth.routes import router as auth_router
 from src.auth.services import get_current_active_user
-=======
 from src.restaurants.routes import router as restaurant_router
->>>>>>> origin
 
 
 middleware = [
