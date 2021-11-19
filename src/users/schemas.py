@@ -11,6 +11,10 @@ class User(BaseModel):
     joined: Optional[datetime] = None
 
 
+class UserInDB(User):
+    hashed_password: str
+
+
 class UserSignIn(BaseModel):
     email: str
     password: str
@@ -27,5 +31,6 @@ class UserSignUp(UserSignIn):
     pass
 
 
-class UserInDB(User):
-    hashed_password: str
+class UserResetPassword(BaseModel):
+    email: str
+    new_password: str

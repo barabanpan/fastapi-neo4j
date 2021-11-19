@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, status
 from email_validator import validate_email, EmailNotValidError
 
 from src.core.db import neo4j_driver
-from src.users.schemas import User, UserSignIn, UserSignInResponse, UserSignUp
+from src.users.schemas import User, UserSignIn, UserSignInResponse, UserSignUp, UserResetPassword
 from src.auth.services import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_password_hash, check_user_exists, authenticate_user, create_access_token,
@@ -73,3 +73,35 @@ async def sign_in(user: UserSignIn):
     }
 
     return UserSignInResponse(**login_data)
+
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(user_reset_pass: UserResetPassword):
+    """Reset User's password using user's email."""
+
+    email, new_password = user_reset_pass.email, user_reset_pass.new_password
+    try:
+        valid = validate_email(email)
+        """Update with the normalized form."""
+        email = valid.email
+    except EmailNotValidError:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Not valid email address was provided: '{email}'"
+        )
+
+    query_reset_password = """
+        MATCH (user:User) WHERE user.email = $email
+        SET user.hashed_password = $new_password_hash
+        RETURN user
+    """
+    with neo4j_driver.session() as session:
+        """Checking if user exists, if not - raise 404."""
+        if not check_user_exists(email):
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+        """Encrypt new password and update user's property."""
+        new_password_hash = create_password_hash(new_password)
+        session.run(query_reset_password, email=email, new_password_hash=new_password_hash)
+
+    return {"detail": "Password successfully updated"}
