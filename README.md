@@ -1,2 +1,2 @@
-# recommender_system
-Recommender system for restaurants with FastAPI and Neo4j
+# fastapi-neoj4-docker-api
+FastAPI and Neo4j API
