@@ -4,11 +4,15 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class User(BaseModel):
-    id: Optional[str] = None
-    email: Optional[str] = None
-    is_active: Optional[bool] = None
-    joined: Optional[datetime] = None
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+
+
+class User(UserUpdate):
+    id: str
+    email: str
+    is_active: bool
+    joined: datetime
 
 
 class UserInDB(User):
@@ -28,9 +32,14 @@ class UserSignInResponse(BaseModel):
 
 
 class UserSignUp(UserSignIn):
-    pass
+    name: str
 
 
 class UserResetPassword(BaseModel):
     email: str
+    new_password: str
+
+
+class UserChangePassword(BaseModel):
+    old_password: str
     new_password: str

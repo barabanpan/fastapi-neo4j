@@ -36,6 +36,11 @@ async def sign_up(new_user: UserSignUp):
         "is_active": True
     }
 
+    new_user = dict(new_user)
+    del new_user["email"]
+    del new_user["password"]
+    attributes.update(new_user)
+
     query_create_new_user = "CREATE (user:User $attributes) RETURN user"
     with neo4j_driver.session() as session:
         if check_user_exists(email):
